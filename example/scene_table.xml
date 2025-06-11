@@ -1,0 +1,40 @@
+<mujoco model="so_arm100_scene">
+  <include file="so_100.xml"/>
+
+  <statistic center="0 -0.2 0.1" extent="0.4"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="140" elevation="-30"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3" markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <texture type="2d" file="assets/table/small_meta_table_diffuse.png"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+    <mesh name="tablelegs" file="table/tablelegs.obj"/>
+    <mesh name="tabletop" file="table/tabletop.obj"/>
+    <material name="table_material" rgba="0.8 0.8 0.8 1"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane"/>
+    
+    <!-- 定义桌子的几何体 -->
+    <body name="table_legs" pos="0 0 0">
+      <geom name="table_legs_geom" type="mesh" mesh="tablelegs" pos="0 0 0" euler="0 0 90" rgba="1 1 1 1" material="table_material"/>
+    </body>
+    <body name="table_top" pos="0 0 0">
+      <geom name="table_top_geom" type="mesh" mesh="tabletop" pos="0 0 0" euler="0 0 90" rgba="1 1 1 1" material="table_material"/>
+    </body>
+
+    <!-- 定义机械臂的几何体并放置在桌子上 -->
+    <include file="so_100.xml"/>
+    <body name="so_100_base" pos="0 0 0.75"> <!-- 调整机械臂的起始位置 -->
+      <include file="so_100.xml"/>
+    </body>
+  </worldbody>
+</mujoco>

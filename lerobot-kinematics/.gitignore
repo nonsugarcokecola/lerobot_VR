@@ -1,0 +1,9 @@
+**.pyc
+**/__pycache__
+*.pyc
+/build/*
+examples/main_follower.json
+.vscode/settings.json
+lerobot_kinematics/lerobot/__pycache__/**
+lerobot_kinematics.egg-info/**
+lerobot_kinematics/**.so

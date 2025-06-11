@@ -1,0 +1,140 @@
+[project]
+
+name = "lerobot-kinematics"
+
+description = "A kinematics Liabrary for Lerobot SO100 ARM"
+
+version = "0.0.1"
+
+authors = [
+    { name = "Huanxu Lin", email = "linhxforeduct@outlook.com" },
+]
+
+dependencies = [
+    "pynput==1.7.7",
+    "numpy==1.24.4",
+    "spatialmath-python>=1.1.5",
+    "spatialgeometry>=1.0.0",
+    "scipy",
+    "ansitable",
+    "progress",
+    "typing_extensions",
+    "tqdm",
+    "feetech-servo-sdk",
+    "mujoco==3.2.5"
+]
+
+license = { file = "LICENSE" }
+
+readme = "README.md"
+
+requires-python = ">=3.7"
+
+keywords = [
+    "python",
+    "kinematics",
+]
+
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    # Indicate who your project is intended for
+    "Intended Audience :: Developers",
+    # Pick your license as you wish (should match "license" above)
+    "License :: OSI Approved :: MIT License",
+    # Specify the Python versions you support here.
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+]
+
+
+[project.urls]
+repository = "https://github.com/petercorke/robotics-toolbox-python"
+
+
+[project.optional-dependencies]
+
+dev = [
+    "sympy",
+    "pytest",
+    "pytest-cov",
+]
+
+[build-system]
+
+requires = ["setuptools", "oldest-supported-numpy"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["lerobot_kinematics"]
+
+
+[tool.black]
+
+line-length = 88
+target_version = ['py37']
+args = '--experimental-string-processing'
+
+include = '\.pyi?$'
+exclude = '''
+
+(
+  /(
+      \.eggs         # exclude a few common directories in the
+    | \.git          # root of the project
+    | \.hg
+    | \.mypy_cache
+    | \.tox
+    | \.venv
+    | \.github
+    | _build
+    | buck-out
+    | build
+    | dist
+    | docs
+  )/
+)
+'''
+
+
+[tool.flake8]
+
+ignore = ['F821', 'W503', 'E741']
+max-line-length = 88
+extend-ignore = 'E203'
+
+
+[tool.cibuildwheel]
+
+# Will cause the wheel to be installed with `pip install <wheel_file>[dev,collision]`
+# test-extras = ["dev", "collision"]
+# test-requires = "pytest"
+# test-command = "pytest {project}/tests"
+
+manylinux-x86_64-image = "manylinux2014"
+manylinux-aarch64-image = "manylinux2014"
+
+# Build CPython 3.7 - 3.11
+build = ["cp37-*", "cp38-*", "cp39-*", "cp310-*", "cp311-*"]
+
+# Disable building musllinux wheels on all platforms
+skip = ["pp*", "*musllinux*"]
+
+
+[tool.cibuildwheel.macos]
+
+# Build `x86_64` and `arm64` wheels on an Intel runner.
+# Note that the `arm64` wheel cannot be tested in this configuration.
+archs = ["x86_64", "arm64"]
+
+[tool.cibuildwheel.linux]
+
+# On an Linux Intel runner with qemu installed, build Intel and ARM wheels
+archs = ["x86_64", "aarch64"]
+
+[tool.cibuildwheel.windows]
+
+# On an Windows Intel runner build wheels
+archs = ["AMD64", "x86"]

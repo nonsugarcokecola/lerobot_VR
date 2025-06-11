@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebXR Quest 2 Controller Input & Pose Sync</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f0f0f0; }
+        #vr_button_container { position: absolute; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10; }
+        #info { position: absolute; bottom: 10px; left: 10px; padding: 10px; background-color: rgba(0,0,0,0.5); color: white; border-radius: 5px; font-size: 11px; max-height: 300px; overflow-y: auto; width: 350px; box-sizing: border-box; }
+        canvas { display: block; }
+    </style>
+</head>
+<body>
+    <div id="vr_button_container"></div>
+    <div id="info">Awaiting VR session...</div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@0.163.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@0.163.0/examples/jsm/"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { VRButton } from 'three/addons/webxr/VRButton.js';
+        import { XRControllerModelFactory } from 'three/addons/webxr/XRControllerModelFactory.js';
+
+        let camera, scene, renderer;
+        let infoDisplay;
+        let vrInfoPlane, vrInfoCanvas, vrInfoContext, vrInfoTexture;
+        let lastSendDataTime = 0;
+        const sendDataInterval = 100; // Send data every 100ms
+
+        init();
+        animate();
+
+        function init() {
+            infoDisplay = document.getElementById('info');
+
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 1000);
+            scene.add(camera); 
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.xr.enabled = true;
+            document.body.appendChild(renderer.domElement);
+
+            const vrButton = VRButton.createButton(renderer);
+            document.getElementById('vr_button_container').appendChild(vrButton);
+
+            const light = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 3);
+            light.position.set(0.5, 1, 0.25);
+            scene.add(light);
+
+            vrInfoCanvas = document.createElement('canvas');
+            vrInfoCanvas.width = 1024; // Increased width for more info
+            vrInfoCanvas.height = 1024; // Increased height for more info
+            vrInfoContext = vrInfoCanvas.getContext('2d');
+            vrInfoTexture = new THREE.CanvasTexture(vrInfoCanvas);
+            vrInfoTexture.needsUpdate = true;
+
+            const planeGeometry = new THREE.PlaneGeometry(1.5, 1.5); // Slightly larger plane
+            const planeMaterial = new THREE.MeshBasicMaterial({ map: vrInfoTexture, transparent: true, side: THREE.DoubleSide });
+            vrInfoPlane = new THREE.Mesh(planeGeometry, planeMaterial);
+            vrInfoPlane.position.set(0, 0.1, -1.5); // Adjust position as needed
+            
+            const controllerModelFactory = new XRControllerModelFactory();
+            for (let i = 0; i < 2; i++) {
+                const controllerGrip = renderer.xr.getControllerGrip(i);
+                controllerGrip.add(controllerModelFactory.createControllerModel(controllerGrip));
+                scene.add(controllerGrip);
+            }
+
+            renderer.xr.addEventListener('sessionstart', onSessionStart);
+            renderer.xr.addEventListener('sessionend', onSessionEnd);
+            window.addEventListener('resize', onWindowResize);
+        }
+
+        function onSessionStart() {
+            infoDisplay.textContent = 'VR Session Started. Use controllers.';
+            camera.add(vrInfoPlane); // Add info plane to camera so it follows user
+            updateVRInfoText('VR Session Active.\nWaiting for controller input...');
+        }
+
+        function onSessionEnd() {
+            infoDisplay.textContent = 'VR Session Ended.';
+            if (vrInfoPlane.parent === camera) {
+                camera.remove(vrInfoPlane);
+            }
+            updateVRInfoText(''); 
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function updateVRInfoText(text) {
+            if (!vrInfoContext || !vrInfoCanvas || !vrInfoTexture) return;
+            vrInfoContext.fillStyle = 'rgba(0, 0, 0, 0.75)'; 
+            vrInfoContext.fillRect(0, 0, vrInfoCanvas.width, vrInfoCanvas.height);
+            vrInfoContext.fillStyle = 'white';
+            vrInfoContext.font = '24px Arial'; // Slightly smaller font for more lines
+            vrInfoContext.textAlign = 'left';
+            const lines = text.split('\n');
+            const lineHeight = 28; // Adjusted line height
+            const padding = 20;
+            let currentY = padding + lineHeight * 0.75; 
+            lines.forEach((line) => {
+                vrInfoContext.fillText(line, padding, currentY);
+                currentY += lineHeight;
+            });
+            vrInfoTexture.needsUpdate = true;
+        }
+
+        async function sendControllerDataToServer(data) {
+            try {
+                const response = await fetch('/updatedata', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+                if (!response.ok) {
+                    console.error('Error sending data to server:', response.status, response.statusText);
+                }
+            } catch (error) {
+                console.error('Failed to send data to server:', error);
+            }
+        }
+
+        function handleControllerInput(frame, timestamp) {
+            let controllerInfoText = ''; // For HTML display
+            let vrDisplayInfoText = 'Controller Status:\n'; // For VR display
+            let allControllersData = [];
+
+            if (renderer.xr.isPresenting && frame) {
+                const session = renderer.xr.getSession();
+                const referenceSpace = renderer.xr.getReferenceSpace();
+
+                if (session && session.inputSources && referenceSpace) {
+                    for (const source of session.inputSources) {
+                        let controllerData = { handedness: source.handedness, buttons: [], axes: [], position: null, orientation: null };
+                        let handInfo = `Hand: ${source.handedness}\n`;
+                        let vrHandInfo = `Hand: ${source.handedness}\n`;
+
+                        if (source.gripSpace) {
+                            const pose = frame.getPose(source.gripSpace, referenceSpace);
+                            if (pose) {
+                                const pos = pose.transform.position;
+                                const orient = pose.transform.orientation;
+                                controllerData.position = { x: pos.x, y: pos.y, z: pos.z };
+                                controllerData.orientation = { x: orient.x, y: orient.y, z: orient.z, w: orient.w };
+                                
+                                handInfo += `  Pos: X:${pos.x.toFixed(2)}, Y:${pos.y.toFixed(2)}, Z:${pos.z.toFixed(2)}\n`;
+                                handInfo += `  Orient: X:${orient.x.toFixed(2)}, Y:${orient.y.toFixed(2)}, Z:${orient.z.toFixed(2)}, W:${orient.w.toFixed(2)}\n`;
+                                
+                                vrHandInfo += `  Pos: X:${pos.x.toFixed(2)}, Y:${pos.y.toFixed(2)}, Z:${pos.z.toFixed(2)}\n`;
+                                vrHandInfo += `  Orient: X:${orient.x.toFixed(2)}, Y:${orient.y.toFixed(2)}\n`; // Split orient for VR display to fit
+                                vrHandInfo += `          Z:${orient.z.toFixed(2)}, W:${orient.w.toFixed(2)}\n`;
+
+                            } else {
+                                handInfo += `  Grip Pose not available\n`;
+                                vrHandInfo += `  Grip Pose N/A\n`;
+                            }
+                        }
+
+                        if (source.gamepad) {
+                            source.gamepad.buttons.forEach((button, index) => {
+                                controllerData.buttons.push({ index: index, pressed: button.pressed, touched: button.touched, value: button.value });
+                                if (button.pressed || button.touched || button.value > 0) {
+                                    let buttonState = `  Btn ${index}: `;
+                                    if (button.pressed) buttonState += 'Pressed ';
+                                    if (button.touched) buttonState += 'Touched ';
+                                    if (button.value > 0) buttonState += `Val:${button.value.toFixed(2)} `;
+                                    handInfo += buttonState + '\n';
+                                    vrHandInfo += buttonState + '\n';
+                                }
+                            });
+                            source.gamepad.axes.forEach((axis, index) => {
+                                controllerData.axes.push({ index: index, value: axis });
+                                if (Math.abs(axis) > 0.05) { 
+                                   handInfo += `  Axis ${index}: ${axis.toFixed(2)}\n`;
+                                   vrHandInfo += `  Axis ${index}: ${axis.toFixed(2)}\n`;
+                                }
+                            });
+                        } else {
+                            handInfo += `  Gamepad not available\n`;
+                            vrHandInfo += `  Gamepad N/A\n`;
+                        }
+                        controllerInfoText += handInfo + '---\n'; 
+                        vrDisplayInfoText += vrHandInfo + '---\n';
+                        allControllersData.push(controllerData);
+                    }
+                }
+            }
+
+            if (controllerInfoText === '') {
+                controllerInfoText = 'No controller input or pose detected.';
+            }
+            if (vrDisplayInfoText === 'Controller Status:\n') {
+                 vrDisplayInfoText += 'No active input or pose.';
+            }
+
+            infoDisplay.textContent = controllerInfoText;
+            if (renderer.xr.isPresenting) {
+                updateVRInfoText(vrDisplayInfoText);
+            }
+
+            if (allControllersData.length > 0 && timestamp - lastSendDataTime > sendDataInterval) {
+                sendControllerDataToServer({ timestamp: timestamp, controllers: allControllersData });
+                lastSendDataTime = timestamp;
+                if (!controllerInfoText.startsWith('No controller input')){
+                    // console.log('--- Controller Data Sent to Server ---');
+                    // console.log(JSON.stringify({ timestamp: timestamp, controllers: allControllersData }, null, 2));
+                    // console.log('------------------------------------');
+                }
+            } else if (allControllersData.length === 0 && controllerInfoText !== 'No controller input or pose detected.') {
+                 if (!controllerInfoText.startsWith('No controller input')){
+                    // console.log('--- Controller Input & Pose (Not Sent) ---');
+                    // console.log(controllerInfoText);
+                    // console.log('-----------------------------------------');
+                }
+            }
+        }
+
+        function animate() {
+            renderer.setAnimationLoop(render);
+        }
+
+        function render(timestamp, frame) {
+            if (renderer.xr.isPresenting && frame) {
+                handleControllerInput(frame, timestamp);
+            }
+            renderer.render(scene, camera);
+        }
+
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,146 @@
+{
+    "timestamp": 333773.777,
+    "controllers": [
+        {
+            "handedness": "right",
+            "buttons": [
+                {
+                    "index": 0,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 1,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 2,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 3,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 4,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 5,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 6,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                }
+            ],
+            "axes": [
+                {
+                    "index": 0,
+                    "value": 0
+                },
+                {
+                    "index": 1,
+                    "value": 0
+                },
+                {
+                    "index": 2,
+                    "value": 0
+                },
+                {
+                    "index": 3,
+                    "value": 0
+                }
+            ],
+            "position": null,
+            "orientation": null
+        },
+        {
+            "handedness": "left",
+            "buttons": [
+                {
+                    "index": 0,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 1,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 2,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 3,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 4,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 5,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 6,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                },
+                {
+                    "index": 7,
+                    "pressed": false,
+                    "touched": false,
+                    "value": 0
+                }
+            ],
+            "axes": [
+                {
+                    "index": 0,
+                    "value": 0
+                },
+                {
+                    "index": 1,
+                    "value": 0
+                },
+                {
+                    "index": 2,
+                    "value": 0
+                },
+                {
+                    "index": 3,
+                    "value": 0
+                }
+            ],
+            "position": null,
+            "orientation": null
+        }
+    ],
+    "server_timestamp": "2025-05-28T05:07:58.846508Z"
+}
