@@ -4,11 +4,18 @@
 
 1、使用Genesis自动采集lerobot机械臂抓取物体的数据（数据格式与lerobot标准相同）
 
-<video src="./doc/episode_000000.mp4"></video>
+
+https://github.com/user-attachments/assets/ce12e647-d2ff-4716-90dd-3c3a77c1f644
+
+
 
 2、使用VR遥操作控制lerobot机械臂
 
-<video src="./doc/vr_tele.mp4"></video>
+
+
+https://github.com/user-attachments/assets/559b8d76-2ab8-46dc-8e25-c2fc924fb6cf
+
+
 
 3、借助lerobot官方代码实现数据训练
 
@@ -67,7 +74,11 @@ python example/serve_https.py
 
 将VR与PC置于同一局域网下（可以用手机热点或者wifi），VR设备在网页中访问https://{电脑IP}:8000/webxr_quest_input.html"，即可进入操作界面，操作界面显示如下：
 
-<video src="./doc/视频1.mp4"></video>
+
+
+https://github.com/user-attachments/assets/abbd6e25-a0fa-4248-9e9e-b125903100d4
+
+
 
 手柄数据会更新到example/controller_data.json中，包括手柄位置，姿态，按键信息等，通过下面命令遥操作lerobot机械臂
 
