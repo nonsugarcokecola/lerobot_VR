@@ -92,7 +92,7 @@ python example/lerobot_vr.py
 
 4、推理评估
 
-运行下面命令可将训练好的模型在仿真环境中进行推理，我通过50组仿真数据训练的模型权重在[这里](https://)可以看到
+运行下面命令可将训练好的模型在仿真环境中进行推理，我通过50组仿真数据训练的模型权重以及训练数据在[这里](https://pan.baidu.com/s/1NJVjD33-rWkM-ubhmUyi-w?pwd=istr)可以看到
 
 ```
 python example/lerobot_sim_infer.py
