@@ -1,0 +1,2 @@
+[console_scripts]
+gs = genesis._main:main
