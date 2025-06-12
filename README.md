@@ -64,7 +64,7 @@ pip install genesis-world
 python example/lerobot_sim_collect.py --start 0 --last 1 --save_dir='./data'
 ```
 
-2、VR遥操作仿真环境中的lerobot机械臂
+2、VR遥操作仿真环境中的lerobot机械臂(手柄数据获取是解耦的，VR也可以操控其他机械臂)
 
 在Mujoco仿真环境中进行遥操作，基于WebXR实现，调试使用的是quest2，quest3应该也可以，首先开启后端接受VR手柄的数据
 
