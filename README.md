@@ -51,7 +51,9 @@ cd lerobot && pip install -e ".[feetech]"
 #安装lerobot-kinematics
 cd lerobot-kinematics && pip install -e .
 #安装Genesis
-pip install genesis-world
+git clone https://github.com/Genesis-Embodied-AI/Genesis.git
+cd Genesis
+pip install -e ".[dev]"
 ```
 
 使用：
