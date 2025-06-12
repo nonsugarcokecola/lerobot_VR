@@ -54,12 +54,12 @@ cd lerobot-kinematics && pip install -e .
 git clone https://github.com/Genesis-Embodied-AI/Genesis.git
 cd Genesis
 pip install -e ".[dev]"
-#假设anaconda环境在/home/{user}/anaconda3/envs/lerobot_gensis/lib/python3.10/site-packages，先删除其中的genesis_world-0.2.1.dist-info和genesis
-rm -rf /home/{user}/anaconda3/envs/lerobot_gensis/lib/python3.10/site-packages/genesis_world-0.2.1.dist-info
-rm -rf /home/{user}/anaconda3/envs/lerobot_gensis/lib/python3.10/site-packages/genesis
+#假设anaconda环境在/home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages，先删除其中的genesis_world-0.2.1.dist-info和genesis
+rm -rf /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/genesis_world-0.2.1.dist-info
+rm -rf /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/genesis
 #将代码仓库中的genesis_world-0.2.1.dist-info和genesis来两个文件复制到环境中
-cp -r ./genesis_world-0.2.1.dist-info /home/{user}/anaconda3/envs/lerobot_gensis/lib/python3.10/site-packages/
-cp -r ./genesis /home/{user}/anaconda3/envs/lerobot_gensis/lib/python3.10/site-packages/
+cp -r ./genesis_world-0.2.1.dist-info /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/
+cp -r ./genesis /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/
 
 ```
 
