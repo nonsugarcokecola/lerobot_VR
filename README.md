@@ -56,7 +56,6 @@ wget https://github.com/Genesis-Embodied-AI/Genesis/archive/refs/tags/v0.2.1.tar
 tar -zxvf v0.2.1.tar.gz
 cd Genesis-0.2.1
 pip install -e ".[dev]"
-
 ```
 
 使用：
@@ -74,7 +73,8 @@ python example/lerobot_sim_collect.py --start 0 --last 1 --save_dir='./data'
 在Mujoco仿真环境中进行遥操作，基于WebXR实现，调试使用的是quest2，quest3应该也可以，首先开启后端接受VR手柄的数据
 
 ```
-python example/serve_https.py
+cd example
+python serve_https.py
 ```
 
 将VR与PC置于同一局域网下（可以用手机热点或者wifi），VR设备在网页中访问https://{电脑IP}:8000/webxr_quest_input.html"，即可进入操作界面，操作界面显示如下：
