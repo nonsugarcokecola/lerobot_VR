@@ -51,15 +51,11 @@ cd lerobot && pip install -e ".[feetech]"
 #安装lerobot-kinematics
 cd lerobot-kinematics && pip install -e .
 #安装Genesis
-git clone https://github.com/Genesis-Embodied-AI/Genesis.git
-cd Genesis
+#因为Genesis在持续更新中，为了确保不出现其他问题，使用Genesis官方打包好的0.2.1版本
+wget https://github.com/Genesis-Embodied-AI/Genesis/archive/refs/tags/v0.2.1.tar.gz
+tar -zxvf v0.2.1.tar.gz
+cd Genesis-0.2.1
 pip install -e ".[dev]"
-#假设anaconda环境在/home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages，先删除其中的genesis_world-0.2.1.dist-info和genesis
-rm -rf /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/genesis_world-0.2.1.dist-info
-rm -rf /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/genesis
-#将代码仓库中的genesis_world-0.2.1.dist-info和genesis来两个文件复制到环境中
-cp -r ./genesis_world-0.2.1.dist-info /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/
-cp -r ./genesis /home/{user}/anaconda3/envs/lerobot_genesis/lib/python3.10/site-packages/
 
 ```
 
