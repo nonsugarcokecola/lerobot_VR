@@ -58,6 +58,7 @@ cd Genesis-0.2.1
 pip install -e ".[dev]"
 ```
 配置环境出现问题可以参考https://github.com/nonsugarcokecola/lerobot_VR/issues/1
+
 使用：
 
 1、Genesis数据采集
